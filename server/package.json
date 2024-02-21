@@ -4,6 +4,8 @@
   "description": "backend for berstcg",
   "main": "src/app.ts",
   "scripts": {
+    "start": "npm run build && NODE_PATH=./dist node dist/app.js",
+    "build": "tsc",
     "dev": "nodemon"
   },
   "license": "ISC",
