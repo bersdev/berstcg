@@ -9,6 +9,7 @@
     "rootDir": "src",
     "baseUrl": "src",
     "resolveJsonModule": true,
+    "lib": ["ES2021"]
   },
   "include": [
     "./**/*.ts",

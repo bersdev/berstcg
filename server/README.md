@@ -22,8 +22,33 @@ sudo apt install npm
 ```
 
 Node dependencies
-```
+```shell
 npm install
+```
+
+Postgresql
+```shell
+sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+sudo apt-get update
+sudo apt-get -y install postgresql
+```
+
+```shell
+# Connect to postgres
+sudo -u postgres psql
+
+# Change password
+ALTER USER postgres WITH PASSWORD 'password';
+
+# Create database
+create database mydb;
+
+# Quit from postgres
+\q
+
+# Connect with to your db with new password
+sudo -u postgres psql -d mydb
 ```
 
 ## Start

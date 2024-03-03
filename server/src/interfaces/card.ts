@@ -25,7 +25,7 @@ export interface Card {
   name: string;
   cost: number;
   type: string;
-  class: string;
+  class: string | null;
   isElite: boolean;
   isLegendary: boolean;
   rarity: Rarity;
@@ -41,5 +41,27 @@ export interface Card {
   icons: {name: string, value?: number}[];
   text: string;
   artisticText: string;
+  artist: string;
+}
+
+export interface PostgresCard {
+  id?: number;
+  name: string;
+  cost: number;
+  type: string;
+  class: string | null;
+  'is-elite': boolean;
+  'is-legendary': boolean;
+  rarity: Rarity;
+  health: number;
+  move: number;
+  'weak-attack': number;
+  'medium-attack': number;
+  'strong-attack': number;
+  release: Release;
+  nature: Nature;
+  icons: string;
+  text: string;
+  'artistic-text': string;
   artist: string;
 }
