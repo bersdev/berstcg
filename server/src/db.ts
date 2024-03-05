@@ -44,6 +44,9 @@ export default class PostgresDb {
       if (typeof object[key] === 'string') {
         return `'${object[key]}'`;
       }
+      if (typeof object[key] === 'object') {
+        return `'${JSON.stringify(object[key])}'`;
+      }
       if (object[key] === null) {
         return `${object[key]}`;
       }
@@ -57,6 +60,9 @@ export default class PostgresDb {
     const values = Object.keys(object).map(key => {
       if (typeof object[key] === 'string') {
         return `"${key}"='${object[key]}'`;
+      }
+      if (typeof object[key] === 'object') {
+        return `"${key}"='${JSON.stringify(object[key])}'`;
       }
       return `"${key}"=${object[key]}`;
     }).join(', ');

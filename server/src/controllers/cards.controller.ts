@@ -49,10 +49,8 @@ export default class CardsController {
     return res.status(200).send('Succefully updated');
   }
 
-  async deleteCard(req: CustomRequest<Card>, res: Response): Promise<Response> {
-    const card = covertToPostgresCards([req.body])[0];
-
-    const condition: Condition = { columnName: 'name', value: card.name };
+  async deleteCard(req: CustomRequest<{cardName: string}>, res: Response): Promise<Response> {
+    const condition: Condition = { columnName: 'name', value: req.body.cardName };
     const cardsFromDb: PostgresCard[] = await this.postgresDb.selectFromTable('cards', [], condition);
 
     await this.postgresDb.deleteFromTable('cards', cardsFromDb[0].id);
@@ -76,7 +74,7 @@ export default class CardsController {
       { name: 'strong-attack', type: 'SMALLSERIAL', notNull: true },
       { name: 'release', type: 'VARCHAR', length: 50, notNull: true },
       { name: 'nature', type: 'VARCHAR', length: 50, notNull: true },
-      { name: 'icons', type: 'HSTORE' },
+      { name: 'icons', type: 'JSON' },
       { name: 'text', type: 'TEXT', notNull: true },
       { name: 'artistic-text', type: 'TEXT', notNull: true },
       { name: 'artist', type: 'VARCHAR', length: 50 },

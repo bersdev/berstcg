@@ -60,7 +60,7 @@ export interface PostgresCard {
   'strong-attack': number;
   release: Release;
   nature: Nature;
-  icons: string;
+  icons: {name: string, value?: number}[];
   text: string;
   'artistic-text': string;
   artist: string;

@@ -21,13 +21,7 @@ export function convertFromPostgresCards(cards: PostgresCard[]): Card[] {
     text: card.text,
     artisticText: card['artistic-text'],
     artist: card.artist,
-    icons: card.icons.replaceAll('\"', '').split(',').map((element) => {
-      const keyVal = element.split('=>');
-      if (keyVal[1] !== 'NULL') {
-        return { name: keyVal[0].trim(), value: Number(keyVal[1]) };
-      }
-      return { name: keyVal[0].trim() };
-    })
+    icons: card.icons
   }));
 }
 
@@ -50,6 +44,6 @@ export function covertToPostgresCards(cards: Card[]): PostgresCard[] {
     text: card.text,
     'artistic-text': card.artisticText,
     artist: card.artist,
-    icons: card.icons.length ? card.icons.map(icon => `"${icon.name}" => ${icon.value ? `"${icon.value}"` : null}`).join(', ') : '',
+    icons: card.icons,
   }));
 }
