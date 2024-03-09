@@ -11,10 +11,10 @@ export default class CardsRotes {
 
   registerRoutes(): void {
     this.router.get('/getAllCards', this.controller.getAllCards.bind(this.controller));
-    this.router.get('/card/:cardName', this.controller.getCard.bind(this.controller));
     this.router.get('/createCardsTable', this.controller.createCardsTable.bind(this.controller));
     this.router.post('/addNewCard', this.controller.addNewCard.bind(this.controller));
     this.router.post('/updateCard', this.controller.updateCard.bind(this.controller));
     this.router.post('/deleteCard', this.controller.deleteCard.bind(this.controller));
+    this.router.post('/findCards', this.controller.findCards.bind(this.controller));
   }
 }

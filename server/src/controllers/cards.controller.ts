@@ -23,8 +23,29 @@ export default class CardsController {
       return res.status(400).send({ message: 'Required card name' });
     }
 
-    const condition: Condition = { columnName: 'name', value: req.params.cardName };
-    const cardsFromDb: PostgresCard[] = await this.postgresDb.selectFromTable('cards', [], condition);
+    const conditions: Condition[] = [{ columnName: 'name', value: req.params.cardName, type: 'STRING' }];
+    const cardsFromDb: PostgresCard[] = await this.postgresDb.selectFromTable('cards', [], conditions);
+    if (!cardsFromDb.length) {
+      return res.status(400).send({ message: 'Card not found' });
+    }
+
+    const cards = convertFromPostgresCards(cardsFromDb);
+    return res.status(200).send(cards[0]);
+  }
+
+  async findCards(req: CustomRequest<{cardName?: string, icons?: string[]}>, res: Response): Promise<Response> {
+    const conditions: Condition[] = [];
+    
+    if (req.body.cardName) {
+      conditions.push({ columnName: 'name', value: req.body.cardName || '', type: 'STRING' });
+    }
+    if (req.body.icons) {
+      req.body.icons.forEach(icon => {
+        conditions.push({ columnName: 'icons' , value: `{"name":"${icon}"}`, type: 'JSON'});
+      });
+    }
+
+    const cardsFromDb: PostgresCard[] = await this.postgresDb.selectFromTable('cards', [], conditions);
     if (!cardsFromDb.length) {
       return res.status(400).send({ message: 'Card not found' });
     }
@@ -42,16 +63,16 @@ export default class CardsController {
   async updateCard(req: CustomRequest<Card>, res: Response): Promise<Response> {
     const card = covertToPostgresCards([req.body])[0];
 
-    const condition: Condition = { columnName: 'name', value: card.name };
-    const cardsFromDb: PostgresCard[] = await this.postgresDb.selectFromTable('cards', [], condition);
+    const conditions: Condition[] = [{ columnName: 'name', value: card.name, type: 'STRING' }];
+    const cardsFromDb: PostgresCard[] = await this.postgresDb.selectFromTable('cards', [], conditions);
 
     await this.postgresDb.updateTable('cards', cardsFromDb[0].id, card);
     return res.status(200).send('Succefully updated');
   }
 
   async deleteCard(req: CustomRequest<{cardName: string}>, res: Response): Promise<Response> {
-    const condition: Condition = { columnName: 'name', value: req.body.cardName };
-    const cardsFromDb: PostgresCard[] = await this.postgresDb.selectFromTable('cards', [], condition);
+    const conditions: Condition[] = [{ columnName: 'name', value: req.body.cardName, type: 'STRING' }];
+    const cardsFromDb: PostgresCard[] = await this.postgresDb.selectFromTable('cards', [], conditions);
 
     await this.postgresDb.deleteFromTable('cards', cardsFromDb[0].id);
     return res.status(200).send('Succefully deleted');

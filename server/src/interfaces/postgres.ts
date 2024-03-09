@@ -1,6 +1,7 @@
 export interface Condition {
   columnName: string;
   value: string | number;
+  type: 'STRING' | 'JSON';
 }
 
 export interface Column {

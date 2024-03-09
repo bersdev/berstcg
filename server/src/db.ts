@@ -20,10 +20,18 @@ export default class PostgresDb {
     this.connectToDb();
   }
 
-  async selectFromTable(tableName: string, columns: string[], condition?: Condition): Promise<any> {
+  async selectFromTable(tableName: string, columns: string[], conditions?: Condition[]): Promise<any> {
     const select = columns.length ? columns.join(',') : '*';
-    const queryCondition = condition ? `WHERE ${condition.columnName}='${condition.value}'` : '';
-    const res = await this.client.query(`SELECT ${select} FROM ${tableName} ${queryCondition};`);
+    const queryConditions = conditions ? `WHERE ${conditions.map(condition => {
+      if (condition.type === 'STRING') {
+        return `${condition.columnName}='${condition.value}'`;
+      }
+      if (condition.type === 'JSON') {
+        return `${condition.columnName}::jsonb @> '[${condition.value}]'`;
+      }
+    }).join(' AND ')}` : '';
+
+    const res = await this.client.query(`SELECT ${select} FROM ${tableName} ${queryConditions};`);
     return res.rows;
   }
 
