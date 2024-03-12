@@ -1,7 +1,7 @@
 import PostgresDb from 'db';
 import { Request, Response } from 'express';
 import { Condition, Column } from 'interfaces/postgres';
-import { Card, PostgresCard } from 'interfaces/card';
+import { Card, CardFilterFields, PostgresCard } from 'interfaces/card';
 import { convertFromPostgresCards, covertToPostgresCards } from 'utils/card.util';
 import { CustomRequest } from 'interfaces/query';
 
@@ -18,32 +18,56 @@ export default class CardsController {
     return res.status(200).send(cards);
   }
 
-  async getCard(req: Request, res: Response): Promise<Response> {
-    if (!req.params.cardName) {
-      return res.status(400).send({ message: 'Required card name' });
-    }
-
-    const conditions: Condition[] = [{ columnName: 'name', value: req.params.cardName, type: 'STRING' }];
-    const cardsFromDb: PostgresCard[] = await this.postgresDb.selectFromTable('cards', [], conditions);
-    if (!cardsFromDb.length) {
-      return res.status(400).send({ message: 'Card not found' });
-    }
-
-    const cards = convertFromPostgresCards(cardsFromDb);
-    return res.status(200).send(cards[0]);
-  }
-
-  async findCards(req: CustomRequest<{cardName?: string, icons?: string[]}>, res: Response): Promise<Response> {
+  async findCards(req: CustomRequest<CardFilterFields>, res: Response): Promise<Response> {
     const conditions: Condition[] = [];
     
-    if (req.body.cardName) {
-      conditions.push({ columnName: 'name', value: req.body.cardName || '', type: 'STRING' });
+    if (req.body.name) {
+      conditions.push({ columnName: 'name', value: req.body.name, type: 'STRING' });
     }
     if (req.body.icons) {
       req.body.icons.forEach(icon => {
         conditions.push({ columnName: 'icons' , value: `{"name":"${icon}"}`, type: 'JSON'});
       });
     }
+    if (req.body.type) {
+      conditions.push({ columnName: 'type', value: req.body.type, type: 'STRING' });
+    }
+    if (req.body.class) {
+      conditions.push({ columnName: 'class', value: req.body.class, type: 'STRING' });
+    }
+    if (req.body.isElite) {
+      conditions.push({ columnName: 'class', value: req.body.isElite, type: 'BOOLEAN' });
+    }
+    if (req.body.rarity) {
+      req.body.rarity.forEach(rarity => {
+        conditions.push({ columnName: 'rarity' , value: rarity, type: 'STRING'});
+      });
+    }
+    if (req.body.cost) {
+      conditions.push({ columnName: 'cost', value: req.body.cost.value, operation: req.body.cost.operation, type: 'NUMBER'});
+    }
+    if (req.body.health) {
+      conditions.push({ columnName: 'health', value: req.body.health.value, operation: req.body.health.operation, type: 'NUMBER'});
+    }
+    if (req.body.move) {
+      conditions.push({ columnName: 'move', value: req.body.move.value, operation: req.body.move.operation, type: 'NUMBER'});
+    }
+    if (req.body.weakAttack) {
+      conditions.push({ columnName: 'weak-attack', value: req.body.weakAttack.value, operation: req.body.weakAttack.operation, type: 'NUMBER'});
+    }
+    if (req.body.releases) {
+      req.body.releases.forEach(release => {
+        conditions.push({ columnName: 'release' , value: release, type: 'STRING'});
+      });
+    }
+    if (req.body.natures) {
+      req.body.natures.forEach(nature => {
+        conditions.push({ columnName: 'nature' , value: nature, type: 'STRING'});
+      });
+    }
+    if (req.body.text) {
+      conditions.push({ columnName: 'text', value: req.body.text, type: 'STRING' });
+    }
 
     const cardsFromDb: PostgresCard[] = await this.postgresDb.selectFromTable('cards', [], conditions);
     if (!cardsFromDb.length) {
@@ -51,7 +75,7 @@ export default class CardsController {
     }
 
     const cards = convertFromPostgresCards(cardsFromDb);
-    return res.status(200).send(cards[0]);
+    return res.status(200).send(cards);
   }
 
   async addNewCard(req: CustomRequest<Card>, res: Response): Promise<Response> {

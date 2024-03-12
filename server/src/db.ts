@@ -24,13 +24,20 @@ export default class PostgresDb {
     const select = columns.length ? columns.join(',') : '*';
     const queryConditions = conditions ? `WHERE ${conditions.map(condition => {
       if (condition.type === 'STRING') {
-        return `${condition.columnName}='${condition.value}'`;
+        return `${condition.columnName} LIKE '%${condition.value}%'`;
       }
       if (condition.type === 'JSON') {
         return `${condition.columnName}::jsonb @> '[${condition.value}]'`;
       }
+      if (condition.type === 'NUMBER') {
+        return `"${condition.columnName}" ${condition.operation} ${condition.value}`;
+      }
+      if (condition.type === 'BOOLEAN') {
+        return `${condition.columnName} = ${condition.value ? 'TRUE' : 'FALSE'}`;
+      }
     }).join(' AND ')}` : '';
 
+    console.log(`SELECT ${select} FROM ${tableName} ${queryConditions};`);
     const res = await this.client.query(`SELECT ${select} FROM ${tableName} ${queryConditions};`);
     return res.rows;
   }

@@ -1,7 +1,10 @@
+import { Compare } from './card';
+
 export interface Condition {
   columnName: string;
-  value: string | number;
-  type: 'STRING' | 'JSON';
+  value: string | number | boolean;
+  type: 'STRING' | 'JSON' | 'NUMBER' | 'BOOLEAN';
+  operation?: Compare;
 }
 
 export interface Column {

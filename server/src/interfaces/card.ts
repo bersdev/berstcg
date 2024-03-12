@@ -65,3 +65,40 @@ export interface PostgresCard {
   'artistic-text': string;
   artist: string;
 }
+
+export enum Compare {
+  '=' = '=',
+  '>' = '>',
+  '>=' = '>=',
+  '<=' = '<=',
+  '<' = '<',
+  '<>' = '<>'
+} 
+
+export interface CardFilterFields {
+  name?: string;
+  icons?: string[];
+  type?: string;
+  class?: string;
+  isElite?: boolean;
+  rarity?: Rarity[];
+  cost?: {
+    value: number;
+    operation: Compare;
+  };
+  health?: {
+    value: number;
+    operation: Compare;
+  };
+  move?: {
+    value: number;
+    operation: Compare;
+  };
+  weakAttack?: {
+    value: number;
+    operation: Compare;
+  };
+  releases?: Release[];
+  natures?: Nature[];
+  text?: string;
+}
